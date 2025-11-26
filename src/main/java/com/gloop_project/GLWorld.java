@@ -17,7 +17,6 @@ public class GLWorld{
     GLLicht lighting;
     GLBoden floor;
     GLHimmel sky;
-    GLTextur textur;
     GLVektor camVector, movementVector, facingDirection, viewpointVector;
     Robot robot;
 
