@@ -78,7 +78,6 @@ public class GLWorld{
             }
         }
 
-        //cameraMovement();
         horizontalMovement();
         cam.verschiebe(movementVector);
     }
