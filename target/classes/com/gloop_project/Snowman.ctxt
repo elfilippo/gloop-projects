@@ -1,0 +1,7 @@
+#BlueJ class context
+comment0.target=Snowman
+comment1.params=x\ y\ z\ size
+comment1.target=Snowman(double,\ double,\ double,\ double)
+comment2.params=
+comment2.target=void\ zeichneObjekt()
+numComments=3

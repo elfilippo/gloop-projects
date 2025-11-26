@@ -1,0 +1,16 @@
+#BlueJ class context
+comment0.target=GLWorld
+comment0.text=git\ add\ .\r\ngit\ commit\ -m\ "changes\ made"\r\ngit\ push\r\n\r\ngit\ pull\r\n
+comment1.params=
+comment1.target=GLWorld()
+comment2.params=
+comment2.target=void\ handleInput()
+comment3.params=
+comment3.target=void\ horizontalMovement()
+comment4.params=
+comment4.target=void\ enableFlight()
+comment5.params=
+comment5.target=void\ gravity()
+comment6.params=
+comment6.target=void\ cameraMovement()
+numComments=7
