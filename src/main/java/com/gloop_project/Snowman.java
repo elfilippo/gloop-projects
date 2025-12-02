@@ -1,7 +1,7 @@
 package com.gloop_project;
 import GLOOP.*;
 
-public class Snowman/* extends GLObjekt*/{
+public class Snowman{
 
     GLKugel bottomSphere, middleSphere, upperSphere, eye1, eye2;
     GLZylinder cylinder, cylinderRim;

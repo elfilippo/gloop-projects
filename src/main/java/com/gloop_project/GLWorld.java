@@ -20,7 +20,7 @@ public class GLWorld{
     GLVektor camVector, movementVector, snowmanMovementVector, facingDirection, viewpointVector;
     Robot robot;
 
-    int speed = 5;
+    double speed = 5;
     double gravity = 2;
     double fallSpeed = 0;
     int terminalVelocity = 50;
@@ -60,7 +60,7 @@ public class GLWorld{
             movementVector = camVector;
             movementVector.subtrahiere(new GLVektor(0,movementVector.gibY(),0));
             snowmanMovementVector.setzeKomponenten(1,0,0);
-            enableFlight();
+            flight();
             handleInput(Snowman);
             cameraMovement();
             try{
@@ -80,20 +80,17 @@ public class GLWorld{
         }
 
         if(keys.istGedrueckt('f')){
-            enableFlight = !enableFlight;
+            toggleFlight();
         }
 
-        if(keys.istGedrueckt('t')){
-            speed += 1;
+        if(keys.istGedrueckt('t') && speed < 1000){
+            speed *= 1.05;
         }
-        if(keys.istGedrueckt('g') && speed != 0){
-            speed -= 1;
-        }
-
-        if(keys.istGedrueckt('u')||keys.istGedrueckt('h')||keys.istGedrueckt('j')||keys.istGedrueckt('k')){
-            SnowmanMovement(Snowman);
+        if(keys.istGedrueckt('g') && speed > 0.05){
+            speed *= 0.975;
         }
 
+        SnowmanMovement(Snowman);
         horizontalMovement();
         cam.verschiebe(movementVector);
     }
@@ -137,7 +134,7 @@ public class GLWorld{
         movementVector.multipliziere(speed);
     }
 
-    public void enableFlight(){
+    void flight(){
         if(enableFlight){
             if(keys.istGedrueckt(' ')){
                 cam.verschiebe(new GLVektor(0,speed,0));
@@ -167,21 +164,17 @@ public class GLWorld{
         }
     }
 
+    public void toggleFlight(){
+        enableFlight = !enableFlight;
+    }
+
     void cameraMovement(){
         int mousePos[] = {mouse.gibX(),mouse.gibY()};
         int mousePosDeltaX = mousePosOld[0]-mousePos[0];
         int mousePosDeltaY = mousePosOld[1]-mousePos[1];
-        //cam.schwenkeHorizontal(-mousePos[0]+mousePosDelta[0]);
-        //cam.schwenkeVertikal((-mousePos[1]+mousePosDelta[1]) * 0.4);
 
-        //if(mousePos[0] != 496 && mousePos[1] != 470){
-        //if(mousePosDeltaX != 0 && mousePosDeltaY != 0){
-        //if(facingDirection.gibY() < 0.99 && facingDirection.gibY() > -0.99) {
-            facingDirection.drehe(0,mousePosDeltaX,-mousePosDeltaY);
-        //} else {
-        //    facingDirection.drehe(0,mousePosDeltaX,0);
-        //}
-
+        facingDirection.drehe(0,mousePosDeltaX,-mousePosDeltaY);
+        
         viewpointVector.setzeKomponenten(facingDirection.gibX(),facingDirection.gibY(),facingDirection.gibZ());
         viewpointVector.addiere(cam.gibPosition());
         cam.setzeBlickpunkt(viewpointVector);
@@ -199,6 +192,12 @@ public class GLWorld{
         int keysPressed = 0;
         boolean isMoving = false;
 
+        if(keys.istGedrueckt('z')){
+            Snowman.rotate(0,5,0);
+        }
+        if(keys.istGedrueckt('i')){
+            Snowman.rotate(0,-5,0);
+        }
         if(keys.istGedrueckt('h') &! keys.istGedrueckt('k')){
             angle += 90;
             isMoving = true;
@@ -224,12 +223,12 @@ public class GLWorld{
 
         if(isMoving){
             snowmanMovementVector.drehe(0,angle/keysPressed,0);
+            snowmanMovementVector.normiere();
         }
         else{
         snowmanMovementVector.multipliziere(0);
         }
 
-        snowmanMovementVector.normiere();
         snowmanMovementVector.multipliziere(speed);
         Snowman.moveBy(snowmanMovementVector.gibX(),0,snowmanMovementVector.gibZ());
     }
