@@ -53,11 +53,13 @@ public class GLWorld{
         sky = new GLHimmel(libPath + "skybox.png");
 
         Snowman Snowman = new Snowman(libPath,0,0,0,1);
+        snowmanMovementVector = new GLVektor(0,0,0);
         
         while(true){
             camVector = cam.gibBlickrichtung();
             movementVector = camVector;
             movementVector.subtrahiere(new GLVektor(0,movementVector.gibY(),0));
+            snowmanMovementVector.setzeKomponenten(1,0,0);
             enableFlight();
             handleInput(Snowman);
             cameraMovement();
@@ -82,10 +84,10 @@ public class GLWorld{
         }
 
         if(keys.istGedrueckt('t')){
-            speed += 0.25;
+            speed += 1;
         }
         if(keys.istGedrueckt('g') && speed != 0){
-            speed -= 0.25;
+            speed -= 1;
         }
 
         if(keys.istGedrueckt('u')||keys.istGedrueckt('h')||keys.istGedrueckt('j')||keys.istGedrueckt('k')){
@@ -184,7 +186,6 @@ public class GLWorld{
         viewpointVector.addiere(cam.gibPosition());
         cam.setzeBlickpunkt(viewpointVector);
 
-        //System.out.println(libPath);
         mousePosOld[0] = mousePos[0];
         mousePosOld[1] = mousePos[1];
         /* if(mousePos[0] > 300 || mousePos[1] > 300 || mousePos[0] < -300 || mousePos[1] < -300){
@@ -232,5 +233,4 @@ public class GLWorld{
         snowmanMovementVector.multipliziere(speed);
         Snowman.moveBy(snowmanMovementVector.gibX(),0,snowmanMovementVector.gibZ());
     }
-
 }

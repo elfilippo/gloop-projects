@@ -43,6 +43,8 @@ public class Snowman/* extends GLObjekt*/{
         cylinder.verschiebe(x,y,z);
         cylinderRim.verschiebe(x,y,z);
         cone.verschiebe(x,y,z);
+        eye1.verschiebe(x,y,z);
+        eye2.verschiebe(x,y,z);
     }
 
     public void moveTo(double x,double y,double z){
@@ -52,6 +54,8 @@ public class Snowman/* extends GLObjekt*/{
         cylinder.setzePosition(x, y, z);
         cylinderRim.setzePosition(x,y,z);
         cone.setzePosition(x, y, z);
+        eye1.setzePosition(x, y, z);
+        eye2.setzePosition(x, y, z);
     }
 
     public void rotate(double x,double y,double z){
@@ -62,5 +66,7 @@ public class Snowman/* extends GLObjekt*/{
         cylinder.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
         cylinderRim.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
         cone.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
+        eye1.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
+        eye2.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
     }
 }
