@@ -17,7 +17,7 @@ public class GLWorld{
     GLLicht lighting;
     GLBoden floor;
     GLHimmel sky;
-    GLVektor camVector, movementVector, facingDirection, viewpointVector;
+    GLVektor camVector, movementVector, snowmanMovementVector, facingDirection, viewpointVector;
     Robot robot;
 
     int speed = 5;
@@ -52,23 +52,22 @@ public class GLWorld{
         floor = new GLBoden(libPath + "floor.jpg");
         sky = new GLHimmel(libPath + "skybox.png");
 
-        new Snowman(libPath,0,0,0,1);
+        Snowman Snowman = new Snowman(libPath,0,0,0,1);
         
         while(true){
             camVector = cam.gibBlickrichtung();
             movementVector = camVector;
             movementVector.subtrahiere(new GLVektor(0,movementVector.gibY(),0));
             enableFlight();
-            handleInput();
+            handleInput(Snowman);
             cameraMovement();
-            movementVector.normiere();
             try{
                 Thread.sleep(5);
             } catch(InterruptedException e){}
         }
     }
 
-    void handleInput(){
+    void handleInput(Snowman Snowman){
         if(keys.istGedrueckt('o')){
             System.exit(0);
         }
@@ -76,6 +75,21 @@ public class GLWorld{
             if(cam.gibY()-characterHeight <= 0){
                 fallSpeed = -20;
             }
+        }
+
+        if(keys.istGedrueckt('f')){
+            enableFlight = !enableFlight;
+        }
+
+        if(keys.istGedrueckt('t')){
+            speed += 0.25;
+        }
+        if(keys.istGedrueckt('g') && speed != 0){
+            speed -= 0.25;
+        }
+
+        if(keys.istGedrueckt('u')||keys.istGedrueckt('h')||keys.istGedrueckt('j')||keys.istGedrueckt('k')){
+            SnowmanMovement(Snowman);
         }
 
         horizontalMovement();
@@ -177,6 +191,46 @@ public class GLWorld{
             robot.mouseMove(500,500);
         }
         */
+    }
+
+    void SnowmanMovement(Snowman Snowman){
+        double angle = 0;
+        int keysPressed = 0;
+        boolean isMoving = false;
+
+        if(keys.istGedrueckt('h') &! keys.istGedrueckt('k')){
+            angle += 90;
+            isMoving = true;
+            keysPressed++;
+        }
+        if(keys.istGedrueckt('k') &! keys.istGedrueckt('h')){
+            angle += 270;
+            isMoving = true;
+            keysPressed++;
+        }
+        if(keys.istGedrueckt('u') &! keys.istGedrueckt('j')){
+            isMoving = true;
+            keysPressed++;
+        }
+        if(keys.istGedrueckt('j') &! keys.istGedrueckt('u')){
+            angle += 180;
+            isMoving = true;
+            keysPressed++;
+        }
+        if(keys.istGedrueckt('u') && keys.istGedrueckt('k') &! keys.istGedrueckt('h') &! keys.istGedrueckt('j')){
+            angle = 630;
+        }
+
+        if(isMoving){
+            snowmanMovementVector.drehe(0,angle/keysPressed,0);
+        }
+        else{
+        snowmanMovementVector.multipliziere(0);
+        }
+
+        snowmanMovementVector.normiere();
+        snowmanMovementVector.multipliziere(speed);
+        Snowman.moveBy(snowmanMovementVector.gibX(),0,snowmanMovementVector.gibZ());
     }
 
 }
