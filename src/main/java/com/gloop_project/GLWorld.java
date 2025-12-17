@@ -53,14 +53,13 @@ public class GLWorld{
         sky = new GLHimmel(libPath + "skybox.png");
 
         Snowman Snowman = new Snowman(libPath,0,0,0,1);
-        snowmanMovementVector = new GLVektor(0,0,0);
         
         while(true){
             camVector = cam.gibBlickrichtung();
             movementVector = camVector;
             movementVector.subtrahiere(new GLVektor(0,movementVector.gibY(),0));
-            snowmanMovementVector.setzeKomponenten(1,0,0);
             flight();
+            System.out.println(Snowman.giveRotation().gibX()+' '+Snowman.giveRotation().gibY());
             handleInput(Snowman);
             cameraMovement();
             try{
@@ -191,6 +190,7 @@ public class GLWorld{
         double angle = 0;
         int keysPressed = 0;
         boolean isMoving = false;
+        GLVektor snowmanMovementVector = Snowman.giveRotation();
 
         if(keys.istGedrueckt('z')){
             Snowman.rotate(0,5,0);
