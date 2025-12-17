@@ -4,7 +4,13 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "main.java.com.gloop_project.App",
+            "projectName": "bluej-projects_668ff214"
+        },
         {
             "type": "java",
             "name": "Current File",

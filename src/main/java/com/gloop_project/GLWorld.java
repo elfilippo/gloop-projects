@@ -19,7 +19,7 @@ public class GLWorld{
     GLHimmel sky;
     GLVektor camVector, movementVector, snowmanMovementVector, facingDirection, viewpointVector;
     Robot robot;
-
+    
     double speed = 5;
     double gravity = 2;
     double fallSpeed = 0;
