@@ -7,10 +7,11 @@ public class Snowman{
     GLZylinder cylinder, cylinderRim;
     GLKegel cone;
     GLVektor movementVector;
-    double size;
+    double size, angle;
 
     public Snowman(String libPath,double x,double y,double z,double size){
         this.size = size;
+        angle = 0;
 
         bottomSphere = new GLKugel(x,(45 + y) * size,z,50 * size);
         middleSphere = new GLKugel(x,(125 + y) * size,z,38 * size);
@@ -70,11 +71,19 @@ public class Snowman{
         cone.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
         eye1.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
         eye2.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
-        //rotation.drehe(x,y,z);
+        angle += y;
     }
 
-    public GLVektor giveRotation(){
-        //return rotation;
-        return new GLVektor(0,0,0);
+    public double giveRotation(){
+        return angle;
+    }
+
+    public double giveY(){
+        double snowmanY = (bottomSphere.gibY()/size)-45;
+        return snowmanY;
+    }
+
+    public double giveSize(){
+        return size;
     }
 }

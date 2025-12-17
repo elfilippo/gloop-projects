@@ -19,10 +19,11 @@ public class GLWorld{
     GLHimmel sky;
     GLVektor camVector, movementVector, snowmanMovementVector, facingDirection, viewpointVector;
     Robot robot;
+    Snowman snowman;
 
     double speed = 5;
     double gravity = 2;
-    double fallSpeed = 0;
+    double fallSpeed = 0, snowmanFallSpeed = 0;
     int terminalVelocity = 50;
     int characterHeight = 200;
     int[] mousePos; int[] mousePosOld = {0,0};
@@ -33,6 +34,7 @@ public class GLWorld{
         cam = new GLKamera();
         camVector = new GLVektor(cam.gibBlickrichtung());
         movementVector = new GLVektor(0,0,0);
+        snowmanMovementVector = new GLVektor(1,0,0);
 
         libPath = System.getProperty("user.dir");
         libPath = libPath + "\\lib\\";
@@ -52,15 +54,14 @@ public class GLWorld{
         floor = new GLBoden(libPath + "floor.jpg");
         sky = new GLHimmel(libPath + "skybox.png");
 
-        Snowman Snowman = new Snowman(libPath,0,0,0,1);
+        snowman = new Snowman(libPath,0,0,0,1);
         
         while(true){
             camVector = cam.gibBlickrichtung();
             movementVector = camVector;
             movementVector.subtrahiere(new GLVektor(0,movementVector.gibY(),0));
             flight();
-            System.out.println(Snowman.giveRotation().gibX()+' '+Snowman.giveRotation().gibY());
-            handleInput(Snowman);
+            handleInput();
             cameraMovement();
             try{
                 Thread.sleep(5);
@@ -68,7 +69,7 @@ public class GLWorld{
         }
     }
 
-    void handleInput(Snowman Snowman){
+    void handleInput(){
         if(keys.istGedrueckt('o')){
             System.exit(0);
         }
@@ -89,7 +90,7 @@ public class GLWorld{
             speed *= 0.975;
         }
 
-        SnowmanMovement(Snowman);
+        SnowmanMovement();
         horizontalMovement();
         cam.verschiebe(movementVector);
     }
@@ -163,6 +164,22 @@ public class GLWorld{
         }
     }
 
+    void snowmanGravity(){
+        if(snowman.giveY() >= 0 || snowmanFallSpeed < 0){
+            snowman.moveBy(0, -snowmanFallSpeed, 0);
+            snowmanFallSpeed += 0.1*gravity*snowman.giveSize();
+        }
+        else{
+            snowmanFallSpeed = 0;
+        }
+        if(fallSpeed > terminalVelocity*snowman.giveSize()){
+            fallSpeed = terminalVelocity*snowman.giveSize();
+        }
+        if(snowman.giveY() < 0){
+            snowman.moveBy(0, -snowman.giveY(), 0);
+        }
+    }
+
     public void toggleFlight(){
         enableFlight = !enableFlight;
     }
@@ -186,17 +203,21 @@ public class GLWorld{
         */
     }
 
-    void SnowmanMovement(Snowman Snowman){
+    void SnowmanMovement(){
         double angle = 0;
         int keysPressed = 0;
         boolean isMoving = false;
-        GLVektor snowmanMovementVector = Snowman.giveRotation();
+        double snowmanRotationAngle = snowman.giveRotation();
+        snowmanMovementVector.setzeKomponenten(1,0,0);
 
         if(keys.istGedrueckt('z')){
-            Snowman.rotate(0,5,0);
+            snowman.rotate(0,2,0);
+        }
+        if(keys.istGedrueckt('n') && snowman.giveY() <= 0){
+            snowmanFallSpeed = -5*gravity*snowman.giveSize();
         }
         if(keys.istGedrueckt('i')){
-            Snowman.rotate(0,-5,0);
+            snowman.rotate(0,-2,0);
         }
         if(keys.istGedrueckt('h') &! keys.istGedrueckt('k')){
             angle += 90;
@@ -222,14 +243,14 @@ public class GLWorld{
         }
 
         if(isMoving){
-            snowmanMovementVector.drehe(0,angle/keysPressed,0);
+            snowmanMovementVector.drehe(0,(angle/keysPressed)+snowmanRotationAngle,0);
             snowmanMovementVector.normiere();
         }
         else{
         snowmanMovementVector.multipliziere(0);
         }
-
         snowmanMovementVector.multipliziere(speed);
-        Snowman.moveBy(snowmanMovementVector.gibX(),0,snowmanMovementVector.gibZ());
+        snowman.moveBy(snowmanMovementVector.gibX(),0,snowmanMovementVector.gibZ());
+        snowmanGravity();
     }
 }
