@@ -3,12 +3,14 @@ import GLOOP.*;
 
 public class Snowman{
 
+    GLWorld world;
     GLKugel bottomSphere, middleSphere, upperSphere, eye1, eye2;
     GLZylinder cylinder, cylinderRim;
     GLKegel nose;
-    GLVektor movementVector;
+    GLVektor movementVector, snowmanMovementVector;
     double size, angle;
     double x, y, z;
+    double snowmanFallSpeed;
     record Attributes(double x, double y, double z, double size){}
 
     public Snowman(double x,double y,double z,double size){
@@ -17,6 +19,10 @@ public class Snowman{
         this.y = y;
         this.z = z;
         angle = 0;
+
+        snowmanFallSpeed = 0;
+        snowmanMovementVector = new GLVektor(1,0,0);
+        world = new GLWorld();
 
         bottomSphere = new GLKugel(x,(45 + y) * size,z,50 * size);
         middleSphere = new GLKugel(x,(125 + y) * size,z,38 * size);
@@ -86,6 +92,78 @@ public class Snowman{
 
     public double giveRotation(){
         return angle;
+    }
+
+    public void movement(GLTastatur keys, Cuboid cuboid){
+        double angle = 0;
+        int keysPressed = 0;
+        boolean isMoving = false;
+        double snowmanRotationAngle = this.giveRotation();
+        snowmanMovementVector.setzeKomponenten(1,0,0);
+
+        if(keys.istGedrueckt('z')){
+            this.rotate(0,2,0);
+        }
+        if(keys.istGedrueckt('n') && this.giveY() <= 0){
+            snowmanFallSpeed = -5*world.getGravity()*this.giveSize();
+        }
+        if(keys.istGedrueckt('i')){
+            this.rotate(0,-2,0);
+        }
+        if(keys.istGedrueckt('h') &! keys.istGedrueckt('k')){
+            angle += 90;
+            isMoving = true;
+            keysPressed++;
+        }
+        if(keys.istGedrueckt('k') &! keys.istGedrueckt('h')){
+            angle += 270;
+            isMoving = true;
+            keysPressed++;
+        }
+        if(keys.istGedrueckt('u') &! keys.istGedrueckt('j')){
+            isMoving = true;
+            keysPressed++;
+        }
+        if(keys.istGedrueckt('j') &! keys.istGedrueckt('u')){
+            angle += 180;
+            isMoving = true;
+            keysPressed++;
+        }
+        if(keys.istGedrueckt('u') && keys.istGedrueckt('k') &! keys.istGedrueckt('h') &! keys.istGedrueckt('j')){
+            angle = 630;
+        }
+        
+        if(isMoving){
+            snowmanMovementVector.drehe(0,(angle/keysPressed)+snowmanRotationAngle,0);
+            snowmanMovementVector.normiere();
+        }
+        else{
+        snowmanMovementVector.multipliziere(0);
+        }
+        snowmanMovementVector.multipliziere(world.getSpeed());
+        this.moveBy(snowmanMovementVector.gibX(),0,snowmanMovementVector.gibZ());
+        
+        while(cuboid.collidesWithSnowman(this)){
+            this.moveBy(-snowmanMovementVector.gibX()/10,0,-snowmanMovementVector.gibZ()/10);
+        }
+
+        this.gravity();
+    }
+
+    void gravity(){
+        if(this.giveY() > 0 || snowmanFallSpeed < 0){
+            this.moveBy(0, -snowmanFallSpeed, 0);
+            snowmanFallSpeed += 0.1*world.getGravity()*this.giveSize();
+        }
+        else{
+            snowmanFallSpeed = 0;
+        }
+        if(snowmanFallSpeed > world.getTerminalVelocity()*this.giveSize()){
+            snowmanFallSpeed = world.getTerminalVelocity()*this.giveSize();
+        }
+        if(this.giveY() < 0){
+            this.moveBy(0, -this.giveY(), 0);
+        }
     }
 
     public double giveY(){

@@ -17,14 +17,14 @@ public class GLWorld{
     GLLicht lighting;
     GLBoden floor;
     GLHimmel sky;
-    GLVektor camVector, movementVector, snowmanMovementVector, facingDirection, viewpointVector;
+    GLVektor camVector, movementVector, facingDirection, viewpointVector;
     Robot robot;
     Snowman snowman;
     Cuboid cuboid;
 
     double speed = 5;
     double gravity = 2;
-    double fallSpeed = 0, snowmanFallSpeed = 0;
+    double fallSpeed = 0;
     int terminalVelocity = 50;
     int characterHeight = 200;
     int[] mousePos; int[] mousePosOld = {0,0};
@@ -35,7 +35,7 @@ public class GLWorld{
         cam = new GLKamera();
         camVector = new GLVektor(cam.gibBlickrichtung());
         movementVector = new GLVektor(0,0,0);
-        snowmanMovementVector = new GLVektor(1,0,0);
+        
 
         libPath = System.getProperty("user.dir");
         libPath = libPath + "\\lib\\";
@@ -55,7 +55,7 @@ public class GLWorld{
         floor = new GLBoden(libPath + "floor.jpg");
         sky = new GLHimmel(libPath + "skybox.png");
 
-        this.snowman = new Snowman(0,0,0,1);
+        snowman = new Snowman(0,0,0,1);
         this.cuboid = new Cuboid(300,25,0,100,50,100);
         
         while(true){
@@ -65,6 +65,7 @@ public class GLWorld{
             flight();
             handleInput();
             cameraMovement();
+            snowman.movement(keys,cuboid);
             try{
                 Thread.sleep(5);
             } catch(InterruptedException e){}
@@ -96,13 +97,12 @@ public class GLWorld{
         }
 
         if(keys.istGedrueckt('b')){
-            this.snowman.scaleBy(1.01);
+            snowman.scaleBy(1.01);
         }
         if(keys.istGedrueckt('v')){
-            this.snowman.scaleBy(0.975);
+            snowman.scaleBy(0.975);
         }
-
-        snowmanMovement();
+        
         horizontalMovement();
         cam.verschiebe(movementVector);
     }
@@ -176,22 +176,6 @@ public class GLWorld{
         }
     }
 
-    void snowmanGravity(){
-        if(this.snowman.giveY() > 0 || snowmanFallSpeed < 0){
-            this.snowman.moveBy(0, -snowmanFallSpeed, 0);
-            snowmanFallSpeed += 0.1*gravity*this.snowman.giveSize();
-        }
-        else{
-            snowmanFallSpeed = 0;
-        }
-        if(fallSpeed > terminalVelocity*this.snowman.giveSize()){
-            fallSpeed = terminalVelocity*this.snowman.giveSize();
-        }
-        if(this.snowman.giveY() < 0){
-            this.snowman.moveBy(0, -this.snowman.giveY(), 0);
-        }
-    }
-
     public void toggleFlight(){
         enableFlight = !enableFlight;
     }
@@ -215,60 +199,16 @@ public class GLWorld{
         */
     }
 
-    void snowmanMovement(){
-        double angle = 0;
-        int keysPressed = 0;
-        boolean isMoving = false;
-        double snowmanRotationAngle = this.snowman.giveRotation();
-        snowmanMovementVector.setzeKomponenten(1,0,0);
+    public double getGravity(){
+        return gravity;
+    }
 
-        if(keys.istGedrueckt('z')){
-            this.snowman.rotate(0,2,0);
-        }
-        if(keys.istGedrueckt('n') && this.snowman.giveY() <= 0){
-            snowmanFallSpeed = -5*gravity*this.snowman.giveSize();
-        }
-        if(keys.istGedrueckt('i')){
-            this.snowman.rotate(0,-2,0);
-        }
-        if(keys.istGedrueckt('h') &! keys.istGedrueckt('k')){
-            angle += 90;
-            isMoving = true;
-            keysPressed++;
-        }
-        if(keys.istGedrueckt('k') &! keys.istGedrueckt('h')){
-            angle += 270;
-            isMoving = true;
-            keysPressed++;
-        }
-        if(keys.istGedrueckt('u') &! keys.istGedrueckt('j')){
-            isMoving = true;
-            keysPressed++;
-        }
-        if(keys.istGedrueckt('j') &! keys.istGedrueckt('u')){
-            angle += 180;
-            isMoving = true;
-            keysPressed++;
-        }
-        if(keys.istGedrueckt('u') && keys.istGedrueckt('k') &! keys.istGedrueckt('h') &! keys.istGedrueckt('j')){
-            angle = 630;
-        }
+    public double getSpeed(){
+        return speed;
+    }
 
-        if(isMoving){
-            snowmanMovementVector.drehe(0,(angle/keysPressed)+snowmanRotationAngle,0);
-            snowmanMovementVector.normiere();
-        }
-        else{
-        snowmanMovementVector.multipliziere(0);
-        }
-        snowmanMovementVector.multipliziere(speed);
-        this.snowman.moveBy(snowmanMovementVector.gibX(),0,snowmanMovementVector.gibZ());
-        
-        while(cuboid.collidesWithSnowman(this.snowman)){
-            this.snowman.moveBy(-snowmanMovementVector.gibX()/10,0,-snowmanMovementVector.gibZ()/10);
-        }
-
-        snowmanGravity();
+    public double getTerminalVelocity(){
+        return terminalVelocity;
     }
 
     public static String getLibPath(){
@@ -277,7 +217,8 @@ public class GLWorld{
 
     void resetScene(){
         cam.setzePosition(800,1000,800);
-        this.snowman.moveTo(0,0,0);
-        this.snowman.scaleBy(1/this.snowman.giveSize());
+        snowman.moveTo(0,0,0);
+        snowman.scaleBy(1/snowman.giveSize());
     }
+
 }
