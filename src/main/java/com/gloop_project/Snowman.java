@@ -86,4 +86,12 @@ public class Snowman{
     public double giveSize(){
         return size;
     }
+
+    public boolean checkCuboidCollision(GLQuader cuboid,double cuboidSizeX,double cuboidSizeY,double cuboidSizeZ){
+        double attributes[] = this.attributes();
+        double cuboidCoordinates[] = {cuboid.gibX(),cuboid.gibY(),cuboid.gibZ()};
+        double cuboidBound[] = {cuboidCoordinates[0]+cuboidSizeX/2,cuboidCoordinates[0]-cuboidSizeX/2};
+
+        return false;
+    }
 }
