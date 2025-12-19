@@ -165,7 +165,7 @@ public class GLWorld{
     }
 
     void snowmanGravity(){
-        if(snowman.giveY() >= 0 || snowmanFallSpeed < 0){
+        if(snowman.giveY() > 0 || snowmanFallSpeed < 0){
             snowman.moveBy(0, -snowmanFallSpeed, 0);
             snowmanFallSpeed += 0.1*gravity*snowman.giveSize();
         }

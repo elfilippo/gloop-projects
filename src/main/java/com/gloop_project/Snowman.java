@@ -35,7 +35,7 @@ public class Snowman{
     }
 
     public double[] attributes(){
-        double[] attributes = {bottomSphere.gibX(),bottomSphere.gibY()-50*size,bottomSphere.gibZ(),size};
+        double[] attributes = {bottomSphere.gibX(),bottomSphere.gibY()-45*size,bottomSphere.gibZ(),size};
         return attributes;
     }
 
