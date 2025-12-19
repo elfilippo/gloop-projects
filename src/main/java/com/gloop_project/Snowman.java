@@ -5,12 +5,17 @@ public class Snowman{
 
     GLKugel bottomSphere, middleSphere, upperSphere, eye1, eye2;
     GLZylinder cylinder, cylinderRim;
-    GLKegel cone;
+    GLKegel nose;
     GLVektor movementVector;
     double size, angle;
+    double x, y, z;
+    record Attributes(double x, double y, double z, double size){}
 
-    public Snowman(String libPath,double x,double y,double z,double size){
+    public Snowman(double x,double y,double z,double size){
         this.size = size;
+        this.x = x;
+        this.y = y;
+        this.z = z;
         angle = 0;
 
         bottomSphere = new GLKugel(x,(45 + y) * size,z,50 * size);
@@ -19,24 +24,23 @@ public class Snowman{
 
         eye1 = new GLKugel(x + (18 * size),(202 + y) * size,z + (-15 * size),4 * size);
         eye2 = new GLKugel(x + (18 * size),(202 + y) * size,z + (15 * size),4 * size);
-        eye1.setzeTextur(libPath + "coal.png");
-        eye2.setzeTextur(libPath + "coal.png");
+        eye1.setzeTextur(GLWorld.getLibPath() + "coal.png");
+        eye2.setzeTextur(GLWorld.getLibPath() + "coal.png");
 
         cylinder = new GLZylinder(x,(240 + y) * size,z,19 * size, 50 * size);
         cylinderRim = new GLZylinder(x,(215 + y) * size,z,30 * size, 2 * size);
         cylinder.drehe(90,0,0);
         cylinderRim.drehe(90,0,0);
-        cylinder.setzeTextur(libPath + "cylinder.png");
-        cylinderRim.setzeTextur(libPath + "cylinder.png");
+        cylinder.setzeTextur(GLWorld.getLibPath() + "cylinder.png");
+        cylinderRim.setzeTextur(GLWorld.getLibPath() + "cylinder.png");
 
-        cone = new GLKegel(x + (40 * size),(190 + y) * size,z,4 * size,25 * size);
-        cone.drehe(0,270,0);
-        cone.setzeTextur(libPath + "carrot.png");
+        nose = new GLKegel(x + (40 * size),(190 + y) * size,z,4 * size,25 * size);
+        nose.drehe(0,270,0);
+        nose.setzeTextur(GLWorld.getLibPath() + "carrot.png");
     }
 
-    public double[] attributes(){
-        double[] attributes = {bottomSphere.gibX(),bottomSphere.gibY()-45*size,bottomSphere.gibZ(),size};
-        return attributes;
+    public Attributes getAttributes(){
+        return new Attributes(this.x,this.y - 45 * this.size,this.z,this.size);
     }
 
     public void moveBy(double x,double y,double z){
@@ -45,32 +49,38 @@ public class Snowman{
         upperSphere.verschiebe(x,y,z);
         cylinder.verschiebe(x,y,z);
         cylinderRim.verschiebe(x,y,z);
-        cone.verschiebe(x,y,z);
+        nose.verschiebe(x,y,z);
         eye1.verschiebe(x,y,z);
         eye2.verschiebe(x,y,z);
+        this.x += x;
+        this.y += y;
+        this.z += z;
     }
 
     public void moveTo(double x,double y,double z){
-        bottomSphere.setzePosition(x, y, z);
-        middleSphere.setzePosition(x,y,z);
-        upperSphere.setzePosition(x, y, z);
-        cylinder.setzePosition(x, y, z);
-        cylinderRim.setzePosition(x,y,z);
-        cone.setzePosition(x, y, z);
-        eye1.setzePosition(x, y, z);
-        eye2.setzePosition(x, y, z);
+        bottomSphere.setzePosition(x * size,y + 45*size,z * size);
+        middleSphere.setzePosition(x * size,y + 125*size, z * size);
+        upperSphere.setzePosition(x * size, y + 188*size, z * size);
+        cylinder.setzePosition(x * size, y + 240*size, z * size);
+        cylinderRim.setzePosition(x * size, y + 215*size, z * size);
+        nose.setzePosition(x + 40*size, y + 190*size, z * size);
+        eye1.setzePosition(x + 18*size, y + 202*size, z + -15*size);
+        eye2.setzePosition(x + 18*size, y + 202*size, z + 15*size);
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     public void rotate(double x,double y,double z){
-        double[] attributes = attributes();
-        bottomSphere.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
-        middleSphere.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
-        upperSphere.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
-        cylinder.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
-        cylinderRim.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
-        cone.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
-        eye1.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
-        eye2.drehe(x,y,z,attributes[0],attributes[1],attributes[2]);
+        Attributes attributes = this.getAttributes();
+        bottomSphere.drehe(x,y,z,attributes.x(),attributes.y(),attributes.z());
+        middleSphere.drehe(x,y,z,attributes.x(),attributes.y(),attributes.z());
+        upperSphere.drehe(x,y,z,attributes.x(),attributes.y(),attributes.z());
+        cylinder.drehe(x,y,z,attributes.x(),attributes.y(),attributes.z());
+        cylinderRim.drehe(x,y,z,attributes.x(),attributes.y(),attributes.z());
+        nose.drehe(x,y,z,attributes.x(),attributes.y(),attributes.z());
+        eye1.drehe(x,y,z,attributes.x(),attributes.y(),attributes.z());
+        eye2.drehe(x,y,z,attributes.x(),attributes.y(),attributes.z());
         angle += y;
     }
 
@@ -87,11 +97,24 @@ public class Snowman{
         return size;
     }
 
-    public boolean checkCuboidCollision(GLQuader cuboid,double cuboidSizeX,double cuboidSizeY,double cuboidSizeZ){
-        double attributes[] = this.attributes();
-        double cuboidCoordinates[] = {cuboid.gibX(),cuboid.gibY(),cuboid.gibZ()};
-        double cuboidBound[] = {cuboidCoordinates[0]+cuboidSizeX/2,cuboidCoordinates[0]-cuboidSizeX/2};
-
-        return false;
+    public void scaleBy(double scaleFactor){
+        bottomSphere.setzePosition(bottomSphere.gibX(),bottomSphere.gibY() * scaleFactor,bottomSphere.gibZ());
+        middleSphere.setzePosition(middleSphere.gibX(),middleSphere.gibY() * scaleFactor,middleSphere.gibZ());
+        upperSphere.setzePosition(upperSphere.gibX(),upperSphere.gibY() * scaleFactor,upperSphere.gibZ());
+        eye1.setzePosition(eye1.gibX() * scaleFactor,eye1.gibY() * scaleFactor,eye1.gibZ() * scaleFactor);
+        eye2.setzePosition(eye2.gibX() * scaleFactor,eye2.gibY() * scaleFactor,eye2.gibZ() * scaleFactor);
+        cylinder.setzePosition(cylinder.gibX(),cylinder.gibY() * scaleFactor,cylinder.gibZ());
+        cylinderRim.setzePosition(cylinderRim.gibX(),cylinderRim.gibY() * scaleFactor,cylinderRim.gibZ());
+        nose.setzePosition(nose.gibX() * scaleFactor,nose.gibY() * scaleFactor,nose.gibZ());
+        bottomSphere.skaliere(scaleFactor);
+        middleSphere.skaliere(scaleFactor);
+        upperSphere.skaliere(scaleFactor);
+        eye1.skaliere(scaleFactor);
+        eye2.skaliere(scaleFactor);
+        cylinder.skaliere(scaleFactor);
+        cylinderRim.skaliere(scaleFactor);
+        nose.skaliere(scaleFactor);
+        this.size *= scaleFactor;
     }
+
 }

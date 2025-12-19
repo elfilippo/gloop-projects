@@ -20,6 +20,7 @@ public class GLWorld{
     GLVektor camVector, movementVector, snowmanMovementVector, facingDirection, viewpointVector;
     Robot robot;
     Snowman snowman;
+    Cuboid cuboid;
 
     double speed = 5;
     double gravity = 2;
@@ -28,7 +29,7 @@ public class GLWorld{
     int characterHeight = 200;
     int[] mousePos; int[] mousePosOld = {0,0};
     boolean enableFlight = true;
-    String libPath = "";
+    static String libPath = "";
     
     public GLWorld(){
         cam = new GLKamera();
@@ -54,7 +55,8 @@ public class GLWorld{
         floor = new GLBoden(libPath + "floor.jpg");
         sky = new GLHimmel(libPath + "skybox.png");
 
-        snowman = new Snowman(libPath,0,0,0,1);
+        this.snowman = new Snowman(0,0,0,1);
+        this.cuboid = new Cuboid(300,25,0,100,50,100);
         
         while(true){
             camVector = cam.gibBlickrichtung();
@@ -82,6 +84,9 @@ public class GLWorld{
         if(keys.istGedrueckt('f')){
             toggleFlight();
         }
+        if(keys.istGedrueckt('r')){
+            resetScene();
+        }
 
         if(keys.istGedrueckt('t') && speed < 1000){
             speed *= 1.05;
@@ -90,7 +95,14 @@ public class GLWorld{
             speed *= 0.975;
         }
 
-        SnowmanMovement();
+        if(keys.istGedrueckt('b')){
+            this.snowman.scaleBy(1.01);
+        }
+        if(keys.istGedrueckt('v')){
+            this.snowman.scaleBy(0.975);
+        }
+
+        snowmanMovement();
         horizontalMovement();
         cam.verschiebe(movementVector);
     }
@@ -165,18 +177,18 @@ public class GLWorld{
     }
 
     void snowmanGravity(){
-        if(snowman.giveY() > 0 || snowmanFallSpeed < 0){
-            snowman.moveBy(0, -snowmanFallSpeed, 0);
-            snowmanFallSpeed += 0.1*gravity*snowman.giveSize();
+        if(this.snowman.giveY() > 0 || snowmanFallSpeed < 0){
+            this.snowman.moveBy(0, -snowmanFallSpeed, 0);
+            snowmanFallSpeed += 0.1*gravity*this.snowman.giveSize();
         }
         else{
             snowmanFallSpeed = 0;
         }
-        if(fallSpeed > terminalVelocity*snowman.giveSize()){
-            fallSpeed = terminalVelocity*snowman.giveSize();
+        if(fallSpeed > terminalVelocity*this.snowman.giveSize()){
+            fallSpeed = terminalVelocity*this.snowman.giveSize();
         }
-        if(snowman.giveY() < 0){
-            snowman.moveBy(0, -snowman.giveY(), 0);
+        if(this.snowman.giveY() < 0){
+            this.snowman.moveBy(0, -this.snowman.giveY(), 0);
         }
     }
 
@@ -203,21 +215,21 @@ public class GLWorld{
         */
     }
 
-    void SnowmanMovement(){
+    void snowmanMovement(){
         double angle = 0;
         int keysPressed = 0;
         boolean isMoving = false;
-        double snowmanRotationAngle = snowman.giveRotation();
+        double snowmanRotationAngle = this.snowman.giveRotation();
         snowmanMovementVector.setzeKomponenten(1,0,0);
 
         if(keys.istGedrueckt('z')){
-            snowman.rotate(0,2,0);
+            this.snowman.rotate(0,2,0);
         }
-        if(keys.istGedrueckt('n') && snowman.giveY() <= 0){
-            snowmanFallSpeed = -5*gravity*snowman.giveSize();
+        if(keys.istGedrueckt('n') && this.snowman.giveY() <= 0){
+            snowmanFallSpeed = -5*gravity*this.snowman.giveSize();
         }
         if(keys.istGedrueckt('i')){
-            snowman.rotate(0,-2,0);
+            this.snowman.rotate(0,-2,0);
         }
         if(keys.istGedrueckt('h') &! keys.istGedrueckt('k')){
             angle += 90;
@@ -250,7 +262,22 @@ public class GLWorld{
         snowmanMovementVector.multipliziere(0);
         }
         snowmanMovementVector.multipliziere(speed);
-        snowman.moveBy(snowmanMovementVector.gibX(),0,snowmanMovementVector.gibZ());
+        this.snowman.moveBy(snowmanMovementVector.gibX(),0,snowmanMovementVector.gibZ());
+        
+        while(cuboid.collidesWithSnowman(this.snowman)){
+            this.snowman.moveBy(-snowmanMovementVector.gibX()/10,0,-snowmanMovementVector.gibZ()/10);
+        }
+
         snowmanGravity();
+    }
+
+    public static String getLibPath(){
+        return libPath;
+    }
+
+    void resetScene(){
+        cam.setzePosition(800,1000,800);
+        this.snowman.moveTo(0,0,0);
+        this.snowman.scaleBy(1/this.snowman.giveSize());
     }
 }
