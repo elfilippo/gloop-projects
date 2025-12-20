@@ -1,6 +1,9 @@
 package com.gloop_project;
 import GLOOP.*;
-import java.awt.Robot;
+import java.awt.*;
+import java.awt.event.InputEvent;
+import javax.swing.*;
+
 import java.awt.AWTException;
 /*git add .
 git commit -m "changes made"
@@ -29,7 +32,7 @@ public class GLWorld{
     static String libPath = "";
     
     public GLWorld(){
-        cam = new GLKamera();
+        cam = new GLSchwenkkamera();
         camVector = new GLVektor(cam.gibBlickrichtung());
         movementVector = new GLVektor(0,0,0);
 
@@ -37,30 +40,30 @@ public class GLWorld{
         libPath = libPath + "\\lib\\";
 
         cam.setzePosition(800,1000,800);
+        cam.setzeBlickpunkt(799.99,1000,800);
         facingDirection = new GLVektor(1,0,0);
         viewpointVector = new GLVektor(0,0,0);
 
         try{
             robot = new Robot();
-            robot.mouseMove(500, 300);
         } catch (AWTException e){}
-        
+        robot.mouseMove(500, 300);
+
         keys = new GLTastatur();
         mouse = new GLMaus();    
-        GLLicht lighting = new GLLicht();
-        GLBoden floor = new GLBoden(libPath + "floor.jpg");
-        GLHimmel sky = new GLHimmel(libPath + "skybox.png");
+        new GLLicht();
+        new GLBoden(libPath + "floor.jpg");
+        new GLHimmel(libPath + "skybox.png");
 
         snowman = new Snowman(0,0,0,1);
         this.cuboid = new Cuboid(300,25,0,100,50,100);
         
         while(true){
-            camVector = cam.gibBlickrichtung();
-            movementVector = camVector;
-            movementVector.subtrahiere(new GLVektor(0,movementVector.gibY(),0));
+            camVector.setzeKomponenten(cam.gibBlickrichtung());
             flight();
             handleInput();
-            cameraMovement();
+            
+            //cameraMovement();
             snowman.movement(keys,cuboid,gravity,terminalVelocity,speed);
             try{
                 Thread.sleep(5);
@@ -69,6 +72,10 @@ public class GLWorld{
     }
 
     void handleInput(){
+        if(!mouse.gedruecktRechts()){
+            robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        }
+
         if(keys.istGedrueckt('o')){
             System.exit(0);
         }
@@ -104,6 +111,8 @@ public class GLWorld{
     }
 
     void horizontalMovement(){
+        movementVector.setzeKomponenten(camVector.gibX(),0,camVector.gibZ());
+        movementVector.normiere();
         double angle = 0;
         int keysPressed = 0;
         boolean isMoving = false;
@@ -177,6 +186,7 @@ public class GLWorld{
     }
 
     void cameraMovement(){
+        movementVector.subtrahiere(new GLVektor(0,movementVector.gibY(),0));
         int mousePos[] = {mouse.gibX(),mouse.gibY()};
         this.mousePos = mousePos;
         int mousePosDeltaX = mousePosOld[0]-mousePos[0];
@@ -196,14 +206,14 @@ public class GLWorld{
         */
     }
 
-    public static String getLibPath(){
-        return libPath;
-    }
-
     void resetScene(){
         cam.setzePosition(800,1000,800);
         snowman.moveTo(0,0,0);
         snowman.scaleBy(1/snowman.giveSize());
+    }
+
+        public static String getLibPath(){
+        return libPath;
     }
 
 }

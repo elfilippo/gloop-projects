@@ -48,6 +48,9 @@ public class Snowman{
     }
 
     public void moveBy(double x,double y,double z){
+        if(this.y + y < 0){
+            y = Math.max(y,0);
+        }
         bottomSphere.verschiebe(x, y, z);
         middleSphere.verschiebe(x,y,z);
         upperSphere.verschiebe(x,y,z);
@@ -103,7 +106,7 @@ public class Snowman{
         if(keys.istGedrueckt('z')){
             this.rotate(0,2,0);
         }
-        if(keys.istGedrueckt('n') && this.giveY() <= 0){
+        if(keys.istGedrueckt('n') && (this.touchingTop(cuboid) || this.y == 0)){
             snowmanFallSpeed = -5*gravity*this.giveSize();
         }
         if(keys.istGedrueckt('i')){
@@ -142,16 +145,16 @@ public class Snowman{
         snowmanMovementVector.multipliziere(speed);
         this.moveBy(snowmanMovementVector.gibX(),0,snowmanMovementVector.gibZ());
         
-        while(cuboid.collidesWithSnowman(this) && i < 100){
+        while((cuboid.collidesWithSnowman(this) && i < 100) &! (this.touchingTop(cuboid) && this.y != 0)){
             this.moveBy(-snowmanMovementVector.gibX()/10,0,-snowmanMovementVector.gibZ()/10);
             i++;
         }
 
-        this.gravity(gravity,terminalVelocity);
+        this.gravity(gravity,terminalVelocity,cuboid);
     }
 
-    void gravity(double gravity,double terminalVelocity){
-        if(this.giveY() > 0 || snowmanFallSpeed < 0){
+    void gravity(double gravity,double terminalVelocity,Cuboid cuboid){
+        if(!this.touchingTop(cuboid) && this.y > 0 || snowmanFallSpeed < 0){
             this.moveBy(0, -snowmanFallSpeed, 0);
             snowmanFallSpeed += 0.1*gravity*this.giveSize();
         }
@@ -161,9 +164,13 @@ public class Snowman{
         if(snowmanFallSpeed > terminalVelocity*this.giveSize()){
             snowmanFallSpeed = terminalVelocity*this.giveSize();
         }
-        if(this.giveY() < 0){
-            this.moveBy(0, -this.giveY(), 0);
+    }
+
+    boolean touchingTop(Cuboid cuboid){
+        if(cuboid.collidesWithSnowman(this) && this.giveY() <= cuboid.getCuboidBound().yMax()){
+            return true;
         }
+        return false;
     }
 
     public double giveY(){
