@@ -11,31 +11,27 @@ git pull
 
 public class GLWorld{
     
-    GLKamera cam;
-    GLTastatur keys;
-    GLMaus mouse;
-    GLLicht lighting;
-    GLBoden floor;
-    GLHimmel sky;
-    GLVektor camVector, movementVector, facingDirection, viewpointVector;
-    Robot robot;
-    Snowman snowman;
-    Cuboid cuboid;
+    private GLKamera cam;
+    private GLTastatur keys;
+    private GLMaus mouse;
+    private GLVektor camVector, movementVector, facingDirection, viewpointVector;
+    private Robot robot;
+    private Snowman snowman;
+    private Cuboid cuboid;
 
-    double speed = 5;
-    double gravity = 2;
-    double fallSpeed = 0;
-    int terminalVelocity = 50;
-    int characterHeight = 200;
-    int[] mousePos; int[] mousePosOld = {0,0};
-    boolean enableFlight = true;
+    private double speed = 5;
+    private double gravity = 2;
+    private double fallSpeed = 0;
+    private int terminalVelocity = 50;
+    private int characterHeight = 200;
+    private int[] mousePos; private int[] mousePosOld = {0,0};
+    private boolean enableFlight = true;
     static String libPath = "";
     
     public GLWorld(){
         cam = new GLKamera();
         camVector = new GLVektor(cam.gibBlickrichtung());
         movementVector = new GLVektor(0,0,0);
-        
 
         libPath = System.getProperty("user.dir");
         libPath = libPath + "\\lib\\";
@@ -51,9 +47,9 @@ public class GLWorld{
         
         keys = new GLTastatur();
         mouse = new GLMaus();    
-        lighting = new GLLicht();
-        floor = new GLBoden(libPath + "floor.jpg");
-        sky = new GLHimmel(libPath + "skybox.png");
+        GLLicht lighting = new GLLicht();
+        GLBoden floor = new GLBoden(libPath + "floor.jpg");
+        GLHimmel sky = new GLHimmel(libPath + "skybox.png");
 
         snowman = new Snowman(0,0,0,1);
         this.cuboid = new Cuboid(300,25,0,100,50,100);
@@ -65,7 +61,7 @@ public class GLWorld{
             flight();
             handleInput();
             cameraMovement();
-            snowman.movement(keys,cuboid);
+            snowman.movement(keys,cuboid,gravity,terminalVelocity,speed);
             try{
                 Thread.sleep(5);
             } catch(InterruptedException e){}
@@ -182,6 +178,7 @@ public class GLWorld{
 
     void cameraMovement(){
         int mousePos[] = {mouse.gibX(),mouse.gibY()};
+        this.mousePos = mousePos;
         int mousePosDeltaX = mousePosOld[0]-mousePos[0];
         int mousePosDeltaY = mousePosOld[1]-mousePos[1];
 
@@ -197,18 +194,6 @@ public class GLWorld{
             robot.mouseMove(500,500);
         }
         */
-    }
-
-    public double getGravity(){
-        return gravity;
-    }
-
-    public double getSpeed(){
-        return speed;
-    }
-
-    public double getTerminalVelocity(){
-        return terminalVelocity;
     }
 
     public static String getLibPath(){
