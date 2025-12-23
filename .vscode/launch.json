@@ -8,6 +8,13 @@
             "type": "java",
             "name": "App",
             "request": "launch",
+            "mainClass": "com.gloop_project.App",
+            "projectName": "javastudies"
+        },
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
             "mainClass": "main.java.com.gloop_project.App",
             "projectName": "bluej-projects_668ff214"
         },
