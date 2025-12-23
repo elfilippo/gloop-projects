@@ -1,16 +1,9 @@
 package com.gloop_project;
+
 import GLOOP.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
-import javax.swing.*;
-
 import java.awt.AWTException;
-/*git add .
-git commit -m "changes made"
-git push
-does this shit work or not??!
-git pull
-*/
 
 public class GLWorld{
     
@@ -27,6 +20,7 @@ public class GLWorld{
     private double fallSpeed = 0;
     private int terminalVelocity = 50;
     private int characterHeight = 200;
+    @SuppressWarnings("unused")
     private int[] mousePos; private int[] mousePosOld = {0,0};
     private boolean enableFlight = true;
     static String libPath = "";
