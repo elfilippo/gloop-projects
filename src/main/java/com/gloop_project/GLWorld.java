@@ -117,26 +117,26 @@ public class GLWorld{
         int keysPressed = 0;
         boolean isMoving = false;
 
-        if(keys.istGedrueckt('a') &! keys.istGedrueckt('d')){
+        if(keys.istGedrueckt('a') && !keys.istGedrueckt('d')){
             angle += 90;
             isMoving = true;
             keysPressed++;
         }
-        if(keys.istGedrueckt('d') &! keys.istGedrueckt('a')){
+        if(keys.istGedrueckt('d') && !keys.istGedrueckt('a')){
             angle += 270;
             isMoving = true;
             keysPressed++;
         }
-        if(keys.istGedrueckt('w') &! keys.istGedrueckt('s')){
+        if(keys.istGedrueckt('w') && !keys.istGedrueckt('s')){
             isMoving = true;
             keysPressed++;
         }
-        if(keys.istGedrueckt('s') &! keys.istGedrueckt('w')){
+        if(keys.istGedrueckt('s') && !keys.istGedrueckt('w')){
             angle += 180;
             isMoving = true;
             keysPressed++;
         }
-        if(keys.istGedrueckt('w') && keys.istGedrueckt('d') &! keys.istGedrueckt('a') &! keys.istGedrueckt('s')){
+        if(keys.istGedrueckt('w') && keys.istGedrueckt('d') && !keys.istGedrueckt('a') && !keys.istGedrueckt('s')){
             angle = 630;
         }
 
