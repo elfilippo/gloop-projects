@@ -49,7 +49,7 @@ public class GLWorld{
         new GLHimmel(libPath + "skybox.png");
 
         snowman = new Snowman(0,0,0,1);
-        this.cuboid = new Cuboid(300,25,0,100,50,100);
+        cuboid = new Cuboid(300,25,0,100,50,100);
         
         while(true){
             camVector.setzeKomponenten(cam.gibBlickrichtung());
