@@ -20,8 +20,7 @@ public class GLWorld{
     private double fallSpeed = 0;
     private int terminalVelocity = 50;
     private int characterHeight = 200;
-    @SuppressWarnings("unused")
-    private int[] mousePos; private int[] mousePosOld = {0,0};
+    private int[] mousePosOld = {0,0};
     private boolean enableFlight = true;
     static String libPath = "";
     
@@ -182,7 +181,6 @@ public class GLWorld{
     void cameraMovement(){
         movementVector.subtrahiere(new GLVektor(0,movementVector.gibY(),0));
         int mousePos[] = {mouse.gibX(),mouse.gibY()};
-        this.mousePos = mousePos;
         int mousePosDeltaX = mousePosOld[0]-mousePos[0];
         int mousePosDeltaY = mousePosOld[1]-mousePos[1];
 
