@@ -1,15 +1,9 @@
 package com.gloop_project;
-import GLOOP.*;
-import java.awt.*;
-import java.awt.event.InputEvent;
 
+import java.awt.event.InputEvent;
 import java.awt.AWTException;
-/*git add .
-git commit -m "changes made"
-git push
-does this shit work or not??!
-git pull
-*/
+import java.awt.Robot;
+import GLOOP.*;
 
 public class GLWorld{
     
@@ -209,8 +203,8 @@ public class GLWorld{
         snowman.moveTo(0,0,0);
         snowman.scaleBy(1/snowman.giveSize());
     }
-
-        public static String getLibPath(){
+    
+    public static String getLibPath(){
         return libPath;
     }
 
